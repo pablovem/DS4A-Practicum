@@ -1,1 +1,8 @@
 .DS_Store
+
+#data
+data/
+*.txt
+*.zip
+*.csv
+*.xlsx
