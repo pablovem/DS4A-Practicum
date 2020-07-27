@@ -43,9 +43,7 @@ app.layout =html.Div(
     ],
     className="ds4a-app", #You can also add your own css files by locating them into the assets folder
 )
-
  
-    
 ###############################################   
 #
 #           APP INTERACTIVITY:
@@ -56,25 +54,20 @@ app.layout =html.Div(
 #Load and modify the data that will be used in the app.
 #################################################################
 
-dfSE = pd.read_csv(r'C:\Users\nanag\PycharmProjects\A4A\Code\Data\pac\SE.csv', sep=';',encoding='latin1')
-dfPAC = pd.read_csv(r'C:\Users\nanag\PycharmProjects\A4A\Code\Data\pac\pac.txt', sep='\t',encoding='latin1')
+dfSE = pd.read_csv(r'data/pac/SE.csv', sep=';',encoding='latin1')
+dfPAC = pd.read_csv(r'data/pac/pac.txt', sep='\t',encoding='latin1')
 varFilterMunicipio = ''
 
+df = pd.read_csv('data/superstore.csv', parse_dates=['Order Date', 'Ship Date'])
 
-df = pd.read_csv('Data\\superstore.csv', parse_dates=['Order Date', 'Ship Date'])
-
-with open('Data\\us.json') as geo:
+with open('data/us.json') as geo:
     geojson = json.loads(geo.read())
-    
-#with open('Data\\antioquia.geojson') as geo:
-#    geojson = json.loads(geo.read())
 
-with open('Data\\states.json') as f:
+with open('data/states.json') as f:
     states_dict = json.loads(f.read())
 
 df['State_abbr'] = df['State'].map(states_dict)
 df['Order_Month'] = pd.to_datetime(df['Order Date'].map(lambda x: "{}-{}".format(x.year, x.month)))
-
 
 #############################################################
 # SCATTER & LINE PLOT : Add sidebar interaction here
@@ -166,37 +159,15 @@ def update_map(start_date,end_date):
 
 @app.callback(
     Output('state_dropdown','value'),
-    [
-        Input('US_map','clickData')
-    ],
-    [
-        State('state_dropdown','value')
-    ]
-
+    [Input('US_map','clickData')],
+    [State('state_dropdown','value')]
 )
 def click_saver(clickData,state):
     if clickData is None:
         raise PreventUpdate
-    
     #print(clickData)
-    
     state.append(clickData['points'][0]['location'])
-    
-    return state
-
-
-
-
-
-    
-
-
-
-
-
-                                                 
-           
-        
+    return state    
 
 if __name__ == "__main__":
     app.run_server(debug=True)

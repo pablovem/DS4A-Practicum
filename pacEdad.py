@@ -22,8 +22,6 @@ import json
 #Recall app
 from app import app
 
-
-
 ###########################################################
 #
 #           APP LAYOUT:
@@ -44,8 +42,6 @@ app.layout =html.Div(
     className="ds4a-app", #You can also add your own css files by locating them into the assets folder
 )
 
- 
-    
 ###############################################   
 #
 #           APP INTERACTIVITY:
@@ -56,36 +52,27 @@ app.layout =html.Div(
 #Load and modify the data that will be used in the app.
 #################################################################
 
-dfSE = pd.read_csv(r'C:\Users\nanag\PycharmProjects\A4A\Code\Data\pac\SE.csv', sep=';',encoding='latin1')
-dfPAC = pd.read_csv(r'C:\Users\nanag\PycharmProjects\A4A\Code\Data\pac\pac.txt', sep='\t',encoding='latin1')
+dfSE = pd.read_csv(r'data/pac/SE.csv', sep=';',encoding='latin1')
+dfPAC = pd.read_csv(r'data/pac/pac.txt', sep='\t',encoding='latin1')
 varFilterMunicipio = ''
 
+df = pd.read_csv('data/superstore.csv', parse_dates=['Order Date', 'Ship Date'])
 
-df = pd.read_csv('Data\\superstore.csv', parse_dates=['Order Date', 'Ship Date'])
-
-with open('Data\\us.json') as geo:
+with open('data/us.json') as geo:
     geojson = json.loads(geo.read())
-    
-#with open('Data\\antioquia.geojson') as geo:
-#    geojson = json.loads(geo.read())
 
-with open('Data\\states.json') as f:
+with open('data/states.json') as f:
     states_dict = json.loads(f.read())
 
 df['State_abbr'] = df['State'].map(states_dict)
 df['Order_Month'] = pd.to_datetime(df['Order Date'].map(lambda x: "{}-{}".format(x.year, x.month)))
 
-
 #############################################################
 # SCATTER & LINE PLOT : Add sidebar interaction here
 #############################################################
 @app.callback(
-    [Output("Line", "figure"),Output("Scatter","figure"),Output("Treemap",'figure')],
-    [
-        Input("state_dropdown", "value"),
-        Input("date_picker", "start_date"),
-        Input("date_picker", "end_date")
-    ],
+    [Output("Line", "figure"),Output("Scatter","figure")],
+    [Input("state_dropdown", "value"),Input("date_picker", "start_date"),Input("date_picker", "end_date")],
 )
 def make_line_plot(state_dropdown, start_date, end_date):
     # se filtran los datos de acuerdo con las variables filtro
@@ -95,56 +82,29 @@ def make_line_plot(state_dropdown, start_date, end_date):
     else:
         dfSE_1 = dfSE
         dfPAC_1 = dfPAC
-
     dfSE_edad = dfSE_1
     dfSE_edad['Año/mes terminación laboral'] = [("_" + i[0:4] + i[5:7]) for i in dfSE_1['Fecha de terminación laboral']]
-
     dfSE_edad['Año/mes terminación laboralInt'] = [int(i[1:]) for i in dfSE_edad['Año/mes terminación laboral']]
     dfSE_edad = dfSE_edad[dfSE_edad["Año/mes terminación laboralInt"] >= 201811]
     SE_edad = dfSE_edad.groupby(['Año/mes terminación laboral', 'estadoCivil']).count().reset_index()
     Line_fig = px.bar(SE_edad, x="Año/mes terminación laboral", y="numeroDocumento", color="estadoCivil")
     Line_fig.update_layout(title='SE edad', paper_bgcolor="#F8F9F9").update_xaxes(categoryorder="category ascending")
-
-
-
-
     dfPAC_edad = dfPAC_1
     dfPAC_edad['Año/mes radicación solicitud beneficiario'] = (dfPAC_edad['FEC_RADICA_SOLICITUD_BENEFICIARIO'] / 100)
-    dfPAC_edad['Año/mes radicación solicitud beneficiario'] = [int(i) for i in
-                                                               dfPAC_1['Año/mes radicación solicitud beneficiario']]
-
+    dfPAC_edad['Año/mes radicación solicitud beneficiario'] = [int(i) for i in dfPAC_1['Año/mes radicación solicitud beneficiario']]
     dfPAC_edad['fecha_nacimiento'] = (dfPAC_edad['FEC_NACIMIENTO_BENEFICIARIO'] / 100)
     dfPAC_edad['fecha_nacimiento'] = [int(i) for i in dfPAC_1['fecha_nacimiento']]
     dfPAC_edad['edad'] = [2020 - int(i / 100) + (1 if int(i / 100) >= 7 else 0) for i in dfPAC_edad['fecha_nacimiento']]
     dfPAC_edad = dfPAC_edad[dfPAC_edad['Año/mes radicación solicitud beneficiario'] > 201612]
-    dfPAC_edad['Año/mes radicación solicitud beneficiario'] = ["_" + str(i) for i in
-                                                               dfPAC_edad['Año/mes radicación solicitud beneficiario']]
+    dfPAC_edad['Año/mes radicación solicitud beneficiario'] = ["_" + str(i) for i in dfPAC_edad['Año/mes radicación solicitud beneficiario']]
     Scatter_fig = px.box(dfPAC_edad, x="Año/mes radicación solicitud beneficiario", y="edad")  # , points="all")
     Scatter_fig.update_layout(title='PaC edad', paper_bgcolor="#F8F9F9").update_xaxes(categoryorder = "category ascending")
-
-
     dfSE_edad = dfSE_1
     dfSE_edad['Año/mes terminación laboral'] = [("_" + i[0:4] + i[5:7]) for i in dfSE_1['Fecha de terminación laboral']]
-
     dfSE_edad['Año/mes terminación laboralInt'] = [int(i[1:]) for i in dfSE_edad['Año/mes terminación laboral']]
     dfSE_edad = dfSE_edad[dfSE_edad["Año/mes terminación laboralInt"] >= 201408]
     dfSE_edad = dfSE_edad.groupby(['Año/mes terminación laboral', 'Días Cotizados PILA']).count().reset_index()
-    Treemap_fig = px.box(dfSE_edad, x="Año/mes terminación laboral", y="Días Cotizados PILA")  # , points="all")
-    Treemap_fig.update_layout(title='SE edad', paper_bgcolor="#F8F9F9").update_xaxes(
-        categoryorder="category ascending")
-
-
-    #Treemap_fig=px.treemap(ddf, path=["Category","Sub-Category","State"],values="Sales",color_discrete_sequence=px.colors.qualitative.Dark24)
-
-    return [Line_fig, Scatter_fig, Treemap_fig]
-
-
-
-#############################################################
-# TREEMAP PLOT : Add sidebar interaction here
-#############################################################
-
-
+    return [Line_fig, Scatter_fig]
 
 #############################################################
 # MAP : Add interactions here
@@ -153,10 +113,7 @@ def make_line_plot(state_dropdown, start_date, end_date):
 #MAP date interaction
 @app.callback(
     Output("US_map", "figure"),
-    [
-        Input("date_picker", "start_date"),
-        Input("date_picker", "end_date")
-    ],
+    [Input("date_picker", "start_date"),Input("date_picker", "end_date")],
 )
 def update_map(start_date,end_date):
     dff = df[(df['Order Date'] >= start_date) & (df['Order Date'] < end_date)] # We filter our dataset for the daterange
@@ -175,42 +132,18 @@ def update_map(start_date,end_date):
     fig_map2.update_layout(title="US State Sales",margin={"r":0,"t":0,"l":0,"b":0}, paper_bgcolor="#F8F9F9", plot_bgcolor="#F8F9F9",)
     return fig_map2
 
-
 #MAP click interaction
-
 @app.callback(
     Output('state_dropdown','value'),
-    [
-        Input('US_map','clickData')
-    ],
-    [
-        State('state_dropdown','value')
-    ]
-
+    [Input('US_map','clickData')],
+    [State('state_dropdown','value')]
 )
 def click_saver(clickData,state):
     if clickData is None:
         raise PreventUpdate
-    
     #print(clickData)
-    
     state.append(clickData['points'][0]['location'])
-    
     return state
-
-
-
-
-
-    
-
-
-
-
-
-                                                 
-           
-        
 
 if __name__ == "__main__":
     app.run_server(debug=True)
