@@ -2,8 +2,8 @@
 
 # Python
 bin/
-__pychache__/
-
+__pycache__/
+.ipynb_checkpoints
 
 #data
 data/
