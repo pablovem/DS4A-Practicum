@@ -1,5 +1,10 @@
 .DS_Store
 
+# Python
+bin/
+__pychache__/
+
+
 #data
 data/
 *.txt
