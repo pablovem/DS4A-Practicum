@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output, State, ClientsideFunction
 import dash_core_components as dcc
 import dash_html_components as html
 
+
 #Dash Bootstrap Components
 import dash_bootstrap_components as dbc 
 
@@ -12,8 +13,11 @@ import dash_bootstrap_components as dbc
 import json
 from datetime import datetime as dt
 
+
 #Recall app
 from app import app
+
+
 
 ####################################################################################
 # Add the DS4A_Img
@@ -31,14 +35,14 @@ DS4A_Img=html.Div(
 #############################################################################
 # State Dropdown 
 #############################################################################
-with open('data/states.json') as f:
+with open('data\\states.json') as f:
     states = json.loads(f.read())
 
 dropdown=dcc.Dropdown(
-            id="state_dropdown",
-            options=[{"label":key, "value":states[key]} for key in states.keys()],
-            value=["NY",'CA'],
-            multi=True
+        id="state_dropdown",
+        options=[{"label":key, "value":states[key]} for key in states.keys()],
+        value=["NY",'CA'],
+        multi=True
         )
 
 
@@ -59,8 +63,7 @@ date_picker=dcc.DatePickerRange(
 # Sidebar Layout
 #############################################################################
 sidebar=html.Div(
-    [   
-        DS4A_Img, #Add the DS4A_Img located in the assets folder
+    [   DS4A_Img, #Add the DS4A_Img located in the assets folder
         html.Hr(), #Add an horizontal line
         ####################################################
         #Place the rest of Layout here
@@ -71,7 +74,11 @@ sidebar=html.Div(
         html.H5("Select states"),
         dropdown,
         html.Hr(),
+         
+
+
     ],className='ds4a-sidebar'
+    
 )
 
 
