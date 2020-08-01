@@ -542,6 +542,7 @@ hr {
 
 body {
   background-color: #f2f2f2;
+  font-family: 'Poppins', Arial;
 }
 
 #report-container {
@@ -549,12 +550,18 @@ body {
   flex-direction: column;
 }
 
+#app-container {
+  display: flex;
+  flex-direction: column;
+}
+
 #header {
   min-height: 42px;
   height: auto;
-  margin-bottom: 24px;
   display: flex;
   justify-content: space-between;
+  background-color: #866ec7;
+  color: white;
 }
 
 #header #title {
@@ -569,6 +576,25 @@ body {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+#flex-grid {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  padding: 0.5rem;
+}
+
+#app-sidebar {
+  flex: 1;
+  background-color: #866ec7;
+  min-height: 100vh;
+}
+
+#app-main {
+  flex: 5;
 }
 
 #report {
