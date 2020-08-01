@@ -22,6 +22,8 @@ header = html.Div(
                     id="logo",
                     className="one-third column",
                 ),
+                
             ],
             id="header",
+            className="row"
         )

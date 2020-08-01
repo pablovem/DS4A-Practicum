@@ -1,5 +1,10 @@
 .DS_Store
 
+# Python
+bin/
+__pycache__/
+.ipynb_checkpoints
+
 #data
 data/
 *.txt
